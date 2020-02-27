@@ -8,12 +8,13 @@ namespace Pokedex.Models
 {
     public class PokemonType
     {
-        [Key]
         public int PokemonTypeId { get; set; }
 
-        [MaxLength(70, ErrorMessage = "El maximo de caracteres permitidos es de 70")]
-        [Required(ErrorMessage = "Este campo es requerido")]
-        [Display(Name = "Nombre")]
-        public string Name { get; set; }
+        public int PokemonId { get; set; }
+        public int TypeId { get; set; }
+
+        public virtual Pokemon Pokemon { get; set; }
+        public virtual Type Type { get; set; }
+
     }
 }

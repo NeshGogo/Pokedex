@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -14,7 +15,7 @@ namespace Pokedex.Models
         [Display(Name ="Nombre")]
         [Required(ErrorMessage ="Este campo es requerido")]
         [MaxLength(50, ErrorMessage ="El maximo de caracteres es 50")]
-        public string Name { get; set; }
+        public string Name { get; set; }      
 
         [Display(Name = "Altura")]
         [Required(ErrorMessage = "Este campo es requerido")]
@@ -27,17 +28,16 @@ namespace Pokedex.Models
         [Display(Name = "Sexo")]
         [Required(ErrorMessage = "Este campo es requerido")]
         public sexType Sex { get; set; }
-
-        [Display(Name = "Tipo")]
+        
+        [Display(Name = "Region")]
         [Required(ErrorMessage = "Este campo es requerido")]
-        public List<PokemonType> Types { get; set; }
+        public int RegionId { get; set; }
 
-        [Display(Name = "Debilidades")]        
-        public List<PokemonType> Weaknesses { get; set; }
 
-        [Display(Name = "Habilidades")]
-        [Required(ErrorMessage = "Este campo es requerido")]
-        public virtual ICollection<PokemonSkill> Skills { get; set; }
+        public virtual ICollection<PokemonType> PokemonTypes { get; set; }
+        public virtual ICollection<PokemonSkill> PokemonSkills { get; set; }
+        public virtual Region Region { get; set; }
+
     }
 
 

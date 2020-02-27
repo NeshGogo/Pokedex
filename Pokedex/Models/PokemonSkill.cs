@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -8,17 +9,12 @@ namespace Pokedex.Models
 {
     public class PokemonSkill
     {
-        [Key]
         public int PokemonSkillId { get; set; }
+        public int PokemonId { get; set; }
+        public int SkillId { get; set; }
 
-        [MaxLength(70, ErrorMessage = "El maximo de caracteres permitidos es de 70")]
-        [Required(ErrorMessage ="Este campo es requerido")]
-        [Display(Name ="Nombre")]
-        public string Name { get; set; }
-
-        [Display(Name = "Descripcion")]
-        public string Description { get; set; }
-
-        public  virtual ICollection<Pokemon> Pokemons { get; set; }
+        
+        public  virtual Pokemon Pokemon { get; set; }
+        public virtual Skill Skill { get; set; }
     }
 }
