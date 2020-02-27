@@ -19,7 +19,7 @@ namespace Pokedex.Data
 
         public PokedexDBContext(DbContextOptions<PokedexDBContext> options): base(options)
         {
-
+            
         }
 
         

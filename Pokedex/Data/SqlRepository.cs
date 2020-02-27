@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 
 namespace Pokedex.Data
@@ -138,6 +139,9 @@ namespace Pokedex.Data
             }
         }
 
-
+        public async Task<IEnumerable<T>> Where(Expression<Func<T,bool>> filter)
+        {
+            return await Entities.Where(filter).ToListAsync();
+        }
     }
 }

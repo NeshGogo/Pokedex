@@ -10,6 +10,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Pokedex.Data;
+using Pokedex.Data.Regions;
+using Pokedex.Services.Regions;
 
 namespace Pokedex
 {
@@ -26,6 +28,9 @@ namespace Pokedex
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddDbContextPool<PokedexDBContext>(options => options.UseSqlServer(Configuration.GetConnectionString("PokedexConnection")));
+
+            services.AddScoped<IRegionRepository, RegionRepositorycs>();
+            services.AddScoped<IRegionService, RegionService>();
 
             services.AddControllersWithViews();
         }
