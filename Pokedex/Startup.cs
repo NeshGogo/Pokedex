@@ -12,8 +12,10 @@ using Microsoft.Extensions.Hosting;
 using Pokedex.Data;
 using Pokedex.Data.Regions;
 using Pokedex.Data.Skills;
+using Pokedex.Data.Types;
 using Pokedex.Services.Regions;
 using Pokedex.Services.Skills;
+using Pokedex.Services.Types;
 
 namespace Pokedex
 {
@@ -35,6 +37,9 @@ namespace Pokedex
             services.AddScoped<IRegionService, RegionService>();
             services.AddScoped<ISkillRepository, SkillRepository>();
             services.AddScoped<ISkillService, SkillService>();
+            services.AddScoped<ITypeRepository, TypeRepository>();
+            services.AddScoped<ITypeService, TypeService>();
+
 
             services.AddControllersWithViews();
         }
