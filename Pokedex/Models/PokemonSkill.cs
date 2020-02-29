@@ -9,7 +9,6 @@ namespace Pokedex.Models
 {
     public class PokemonSkill
     {
-        public int PokemonSkillId { get; set; }
         public int PokemonId { get; set; }
         public int SkillId { get; set; }
 

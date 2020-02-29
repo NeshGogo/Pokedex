@@ -2,7 +2,7 @@
 
 namespace Pokedex.Migrations
 {
-    public partial class PokedexMigration : Migration
+    public partial class pokedexmigration : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -12,7 +12,8 @@ namespace Pokedex.Migrations
                 {
                     RegionId = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(maxLength: 70, nullable: false)
+                    Name = table.Column<string>(maxLength: 70, nullable: false),
+                    Colors = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -73,14 +74,12 @@ namespace Pokedex.Migrations
                 name: "PokemonSkills",
                 columns: table => new
                 {
-                    PokemonSkillId = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
                     PokemonId = table.Column<int>(nullable: false),
                     SkillId = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_PokemonSkills", x => x.PokemonSkillId);
+                    table.PrimaryKey("PK_PokemonSkills", x => new { x.PokemonId, x.SkillId });
                     table.ForeignKey(
                         name: "FK_PokemonSkills_Pokemons_PokemonId",
                         column: x => x.PokemonId,
@@ -99,14 +98,12 @@ namespace Pokedex.Migrations
                 name: "PokemonTypes",
                 columns: table => new
                 {
-                    PokemonTypeId = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
                     PokemonId = table.Column<int>(nullable: false),
                     TypeId = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_PokemonTypes", x => x.PokemonTypeId);
+                    table.PrimaryKey("PK_PokemonTypes", x => new { x.PokemonId, x.TypeId });
                     table.ForeignKey(
                         name: "FK_PokemonTypes_Pokemons_PokemonId",
                         column: x => x.PokemonId,
@@ -127,19 +124,9 @@ namespace Pokedex.Migrations
                 column: "RegionId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_PokemonSkills_PokemonId",
-                table: "PokemonSkills",
-                column: "PokemonId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_PokemonSkills_SkillId",
                 table: "PokemonSkills",
                 column: "SkillId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_PokemonTypes_PokemonId",
-                table: "PokemonTypes",
-                column: "PokemonId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_PokemonTypes_TypeId",

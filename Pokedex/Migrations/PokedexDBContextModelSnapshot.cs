@@ -51,20 +51,13 @@ namespace Pokedex.Migrations
 
             modelBuilder.Entity("Pokedex.Models.PokemonSkill", b =>
                 {
-                    b.Property<int>("PokemonSkillId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
                     b.Property<int>("PokemonId")
                         .HasColumnType("int");
 
                     b.Property<int>("SkillId")
                         .HasColumnType("int");
 
-                    b.HasKey("PokemonSkillId");
-
-                    b.HasIndex("PokemonId");
+                    b.HasKey("PokemonId", "SkillId");
 
                     b.HasIndex("SkillId");
 
@@ -73,20 +66,13 @@ namespace Pokedex.Migrations
 
             modelBuilder.Entity("Pokedex.Models.PokemonType", b =>
                 {
-                    b.Property<int>("PokemonTypeId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
                     b.Property<int>("PokemonId")
                         .HasColumnType("int");
 
                     b.Property<int>("TypeId")
                         .HasColumnType("int");
 
-                    b.HasKey("PokemonTypeId");
-
-                    b.HasIndex("PokemonId");
+                    b.HasKey("PokemonId", "TypeId");
 
                     b.HasIndex("TypeId");
 

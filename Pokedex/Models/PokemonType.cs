@@ -8,7 +8,6 @@ namespace Pokedex.Models
 {
     public class PokemonType
     {
-        public int PokemonTypeId { get; set; }
 
         public int PokemonId { get; set; }
         public int TypeId { get; set; }

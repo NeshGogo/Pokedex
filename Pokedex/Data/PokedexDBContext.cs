@@ -21,6 +21,13 @@ namespace Pokedex.Data
         {
             
         }
+        protected override void OnModelCreating( ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<PokemonSkill>().HasKey(p => new { p.PokemonId, p.SkillId });
+            modelBuilder.Entity<PokemonType>().HasKey(p => new { p.PokemonId, p.TypeId });
+
+            base.OnModelCreating(modelBuilder);
+        }
 
         
     }
