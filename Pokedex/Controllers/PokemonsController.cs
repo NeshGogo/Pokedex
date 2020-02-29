@@ -50,7 +50,7 @@ namespace Pokedex.Controllers
         {
             ViewData["RegionId"] = new SelectList(_context.Regions, "RegionId", "Name");
             ViewData["Skills"] = new SelectList(_context.Skills, "SkillId", "Name");
-            ViewData["Types"] = new SelectList(_context.Skills, "TypeId", "Name");
+            ViewData["Types"] = new SelectList(_context.Types, "TypeId", "Name");
             return View();
         }
 
@@ -59,11 +59,38 @@ namespace Pokedex.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("PokemonId,Name,Height,Weight,Sex,RegionId")] Pokemon pokemon, List<int> skills)
+        public async Task<IActionResult> Create([Bind("PokemonId,Name,Height,Weight,Sex,RegionId")] Pokemon pokemon, List<int> skills, List<int> types)
         {
             if (ModelState.IsValid)
             {
                 _context.Add(pokemon);
+                await _context.SaveChangesAsync();
+                var pokemonskills = new List<PokemonSkill>();
+                var pokemontype = new List<PokemonType>();
+
+                foreach (var item in skills)
+                {
+                    PokemonSkill pokemonSkill = new PokemonSkill
+                    {
+                        PokemonId =pokemon.PokemonId,
+                        SkillId = item
+
+                    };
+                    pokemonskills.Add(pokemonSkill);
+                }
+                foreach (var item in types)
+                {
+                    PokemonType pokemonType = new PokemonType
+                    {
+                        PokemonId = pokemon.PokemonId,
+                        TypeId = item
+
+                    };
+                    pokemontype.Add(pokemonType);
+                }
+                _context.PokemonSkills.AddRange(pokemonskills);
+                _context.PokemonTypes.AddRange(pokemontype);
+          
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }

@@ -1,4 +1,6 @@
 ﻿using Pokedex.Data.Pokemons;
+using Pokedex.Data.PokemonSkills;
+using Pokedex.Data.PokemonTypes;
 using Pokedex.Models;
 using System;
 using System.Collections.Generic;
@@ -10,11 +12,15 @@ namespace Pokedex.Services.Pokemons
 {
     public class PokemonService : IPokemonService
     {
-        private readonly IPokemonSkillRepository _pokemonRepository;
+        private readonly IPokemonRepository _pokemonRepository;
+        private readonly IPokemonSkillRepository _pokemonSkillRepository;
+        private readonly IPokemonTypeRepository _pokemonTypeRepository;
 
-        public PokemonService(IPokemonSkillRepository pokemonRepository)
+        public PokemonService(IPokemonRepository pokemonRepository, IPokemonSkillRepository pokemonSkillRepository , IPokemonTypeRepository pokemonTypeRepository)
         {
             _pokemonRepository = pokemonRepository;
+            _pokemonSkillRepository = pokemonSkillRepository;
+            _pokemonTypeRepository = pokemonTypeRepository;
         }
         public async Task<bool> Delete(Pokemon pokemon)
         {
