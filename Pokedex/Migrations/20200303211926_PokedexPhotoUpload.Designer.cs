@@ -2,15 +2,17 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Pokedex.Data;
 
 namespace Pokedex.Migrations
 {
     [DbContext(typeof(PokedexDBContext))]
-    partial class PokedexDBContextModelSnapshot : ModelSnapshot
+    [Migration("20200303211926_PokedexPhotoUpload")]
+    partial class PokedexPhotoUpload
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -82,7 +84,25 @@ namespace Pokedex.Migrations
                     b.ToTable("PokemonTypes");
                 });
 
-           
+            modelBuilder.Entity("Pokedex.Models.Region", b =>
+                {
+                    b.Property<int>("RegionId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int>("Colors")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(70)")
+                        .HasMaxLength(70);
+
+                    b.HasKey("RegionId");
+
+                    b.ToTable("Regions");
+                });
 
             modelBuilder.Entity("Pokedex.Models.Skill", b =>
                 {

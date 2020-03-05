@@ -1,29 +1,46 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Pokedex.Data;
 using Pokedex.Models;
+using Pokedex.Services.Pokemons;
+using Pokedex.Services.Regions;
+using Pokedex.Services.Skills;
+using Pokedex.Services.Types;
+using Pokedex.ViewModels;
 
 namespace Pokedex.Controllers
 {
     public class PokemonsController : Controller
     {
-        private readonly PokedexDBContext _context;
+        
+        private readonly IPokemonService _pokemonService;
+        private readonly ISkillService _skillService;
+        private readonly IRegionService _regionService;
+        private readonly ITypeService _typeService;
+        private readonly IWebHostEnvironment _hostingEnvironment;
 
-        public PokemonsController(PokedexDBContext context)
+        public PokemonsController(IPokemonService pokemonService, ISkillService skillService, IRegionService regionService, ITypeService typeService, IWebHostEnvironment hostingEnvironment)
         {
-            _context = context;
+            _pokemonService = pokemonService;
+            _skillService = skillService;
+            _regionService = regionService;
+            _typeService = typeService;
+            _hostingEnvironment = hostingEnvironment;
         }
 
         // GET: Pokemons
         public async Task<IActionResult> Index()
         {
-            var pokedexDBContext = _context.Pokemons.Include(p => p.Region);
-            return View(await pokedexDBContext.ToListAsync());
+            var pokemons = await _pokemonService.GetAllWithRegion();
+            return View(pokemons);
         }
 
         // GET: Pokemons/Details/5
@@ -33,10 +50,9 @@ namespace Pokedex.Controllers
             {
                 return NotFound();
             }
+            var pokemon = await _pokemonService.GetByIdFull(id);           
 
-            var pokemon = await _context.Pokemons
-                .Include(p => p.Region).Include(p => p.PokemonSkills).Include(p=> p.PokemonTypes)
-                .FirstOrDefaultAsync(m => m.PokemonId == id);
+            
             if (pokemon == null)
             {
                 return NotFound();
@@ -46,56 +62,39 @@ namespace Pokedex.Controllers
         }
 
         // GET: Pokemons/Create
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
-            ViewData["RegionId"] = new SelectList(_context.Regions, "RegionId", "Name");
-            ViewData["Skills"] = new SelectList(_context.Skills, "SkillId", "Name");
-            ViewData["Types"] = new SelectList(_context.Types, "TypeId", "Name");
-            return View();
+            ViewData["RegionId"] = new SelectList(await _regionService.GetAll(), "RegionId", "Name");
+            ViewData["Skills"] = new SelectList(await _skillService.GetAll(), "SkillId", "Name");
+            ViewData["Types"] = new SelectList(await _typeService.GetAll(), "TypeId", "Name");
+            return View("Form");
         }
 
-        // POST: Pokemons/Create
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
+
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("PokemonId,Name,Height,Weight,Sex,RegionId")] Pokemon pokemon, List<int> skills, List<int> types)
+        public async Task<IActionResult> Create(PokemonViewModel pokemon)
         {
+           
             if (ModelState.IsValid)
             {
-                _context.Add(pokemon);
-                await _context.SaveChangesAsync();
-                var pokemonskills = new List<PokemonSkill>();
-                var pokemontype = new List<PokemonType>();
-
-                foreach (var item in skills)
+                string photoPath = await UploadedFileProcess(pokemon.Photo);
+                Pokemon pokemon1 = new Pokemon()
                 {
-                    PokemonSkill pokemonSkill = new PokemonSkill
-                    {
-                        PokemonId =pokemon.PokemonId,
-                        SkillId = item
-
-                    };
-                    pokemonskills.Add(pokemonSkill);
-                }
-                foreach (var item in types)
-                {
-                    PokemonType pokemonType = new PokemonType
-                    {
-                        PokemonId = pokemon.PokemonId,
-                        TypeId = item
-
-                    };
-                    pokemontype.Add(pokemonType);
-                }
-                _context.PokemonSkills.AddRange(pokemonskills);
-                _context.PokemonTypes.AddRange(pokemontype);
-          
-                await _context.SaveChangesAsync();
+                    Name = pokemon.Name,
+                    Height = pokemon.Height,
+                    Weight = pokemon.Weight,
+                    RegionId = pokemon.RegionId,
+                    Sex = pokemon.Sex,
+                    PhotoPath = photoPath
+                };
+               await  _pokemonService.Insert(pokemon1, pokemon.Skills, pokemon.Types);
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["RegionId"] = new SelectList(_context.Regions, "RegionId", "Name", pokemon.RegionId);
-            return View(pokemon);
+            ViewData["RegionId"] = new SelectList(await _regionService.GetAll(), "RegionId", "Name");
+            ViewData["Skills"] = new MultiSelectList(await _skillService.GetAll(), "SkillId", "Name");
+            ViewData["Types"] = new MultiSelectList(await _typeService.GetAll(), "TypeId", "Name");
+            return View("Form",pokemon);
         }
 
         // GET: Pokemons/Edit/5
@@ -105,38 +104,68 @@ namespace Pokedex.Controllers
             {
                 return NotFound();
             }
-
-            var pokemon = await _context.Pokemons.FindAsync(id);
+            
+            var pokemon = await _pokemonService.GetByIdFull(id);
+            
             if (pokemon == null)
             {
                 return NotFound();
             }
-            ViewData["RegionId"] = new SelectList(_context.Regions, "RegionId", "Name", pokemon.RegionId);
-            return View(pokemon);
+            var pokemonViewModel = new PokemonViewModel
+            {
+                Height = pokemon.Height,
+                Name = pokemon.Name,
+                PokemonId = pokemon.PokemonId,
+                RegionId = pokemon.RegionId,
+                Sex = pokemon.Sex,
+                Weight = pokemon.Weight,
+                Skills = new List<int>(),
+                Types = new List<int>()
+            };
+            
+            pokemon.PokemonSkills.ForEach(p => { pokemonViewModel.Skills.Add(p.SkillId); });
+            pokemon.PokemonTypes.ForEach(p => { pokemonViewModel.Types.Add(p.TypeId); });
+
+            ViewData["RegionId"] = new SelectList(await _regionService.GetAll(), "RegionId", "Name", pokemon.RegionId);
+            ViewData["Skills"] = new MultiSelectList(await _skillService.GetAll(), "SkillId", "Name", pokemonViewModel.Skills);
+            ViewData["Types"] = new MultiSelectList(await _typeService.GetAll(), "TypeId", "Name", pokemonViewModel.Types);
+
+            return View("Form", pokemonViewModel);
         }
 
-        // POST: Pokemons/Edit/5
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
+
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("PokemonId,Name,Height,Weight,Sex,RegionId")] Pokemon pokemon)
+        public async Task<IActionResult> Edit(int id, PokemonViewModel pokemon)
         {
             if (id != pokemon.PokemonId)
             {
                 return NotFound();
             }
 
-            if (ModelState.IsValid)
+            if (ModelState.IsValid && pokemon.Skills != null && pokemon.Types != null)
             {
                 try
                 {
-                    _context.Update(pokemon);
-                    await _context.SaveChangesAsync();
+                    string photoPath = await UploadedFileProcess(pokemon.Photo);
+                    Pokemon pokemon1 = new Pokemon()
+                    {
+                        PokemonId = pokemon.PokemonId,
+                        Name = pokemon.Name,
+                        Height = pokemon.Height,
+                        Weight = pokemon.Weight,
+                        RegionId = pokemon.RegionId,
+                        Sex = pokemon.Sex,
+                        PhotoPath = photoPath
+                    };                   
+                   
+                    await _pokemonService.Update(pokemon1, pokemon.Skills, pokemon.Types);
+
+                    return RedirectToAction(nameof(Index));
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!PokemonExists(pokemon.PokemonId))
+                    if (!await PokemonExists(pokemon.PokemonId))
                     {
                         return NotFound();
                     }
@@ -147,8 +176,16 @@ namespace Pokedex.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["RegionId"] = new SelectList(_context.Regions, "RegionId", "Name", pokemon.RegionId);
-            return View(pokemon);
+            if (pokemon.Skills == null)            
+                ModelState.AddModelError(string.Empty, "Debe seleccionar almenos 1 habilidad.");
+            if (pokemon.Types == null)
+                ModelState.AddModelError(string.Empty, "Debe seleccionar almenos 1 tipo.");
+
+           
+            ViewData["RegionId"] = new SelectList(await _regionService.GetAll(), "RegionId", "Name", pokemon.RegionId);
+            ViewData["Skills"] = new MultiSelectList(await _skillService.GetAll(), "SkillId", "Name", pokemon.Skills);
+            ViewData["Types"] = new MultiSelectList(await _typeService.GetAll(), "TypeId", "Name", pokemon.Types);
+            return View("Form",pokemon);
         }
 
         // GET: Pokemons/Delete/5
@@ -159,9 +196,7 @@ namespace Pokedex.Controllers
                 return NotFound();
             }
 
-            var pokemon = await _context.Pokemons
-                .Include(p => p.Region)
-                .FirstOrDefaultAsync(m => m.PokemonId == id);
+            var pokemon = await _pokemonService.GetByIdFull(id);
             if (pokemon == null)
             {
                 return NotFound();
@@ -175,15 +210,41 @@ namespace Pokedex.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var pokemon = await _context.Pokemons.FindAsync(id);
-            _context.Pokemons.Remove(pokemon);
-            await _context.SaveChangesAsync();
+            var pokemon = await _pokemonService.GetById(id);
+             await _pokemonService.Delete(pokemon);
             return RedirectToAction(nameof(Index));
         }
 
-        private bool PokemonExists(int id)
+        private async Task<bool> PokemonExists(int id)
         {
-            return _context.Pokemons.Any(e => e.PokemonId == id);
+            var pokemon = await _pokemonService.GetById(id);
+            if (pokemon != null)
+                return true;
+            return false;
+        }
+        public async  Task<string> UploadedFileProcess( IFormFile photo)
+        {
+            string uniqueFileName = null;
+            if (photo != null)
+            {
+                string uploadFolder = Path.Combine(_hostingEnvironment.WebRootPath, "css","PokemonImg");
+                uniqueFileName = Guid.NewGuid().ToString() + "_" + photo.FileName;
+                string filePath = Path.Combine(uploadFolder, uniqueFileName);
+                using (var fileStream = new FileStream(filePath, FileMode.Create))
+                {
+                    photo.CopyTo(fileStream);
+                }
+                
+                return uniqueFileName;
+            }
+
+
+            return uniqueFileName;
+
+
+
+
+
         }
     }
 }

@@ -1,21 +1,23 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Http;
+using Pokedex.Models;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Pokedex.Models
+namespace Pokedex.ViewModels
 {
-    public class Pokemon
+    public class PokemonViewModel
     {
         [Key]
         public int PokemonId { get; set; }
 
-        [Display(Name ="Nombre")]
-        [Required(ErrorMessage ="Este campo es requerido")]
-        [MaxLength(50, ErrorMessage ="El maximo de caracteres es 50")]
-        public string Name { get; set; }      
+        [Display(Name = "Nombre")]
+        [Required(ErrorMessage = "Este campo es requerido")]
+        [MaxLength(50, ErrorMessage = "El maximo de caracteres es 50")]
+        public string Name { get; set; }
+
         [Display(Name = "Altura")]
         [Required(ErrorMessage = "Este campo es requerido")]
         public float Height { get; set; }
@@ -27,19 +29,16 @@ namespace Pokedex.Models
         [Display(Name = "Sexo")]
         [Required(ErrorMessage = "Este campo es requerido")]
         public SexTypeEnum Sex { get; set; }
-        
+
         [Display(Name = "Region")]
         [Required(ErrorMessage = "Este campo es requerido")]
         public int RegionId { get; set; }
 
-        public string PhotoPath { get; set; }
+       
+        public IFormFile Photo { get; set; }
 
-        public virtual List<PokemonType> PokemonTypes { get; set; }
-        public virtual List<PokemonSkill> PokemonSkills { get; set; }
-        public virtual Region Region { get; set; }
+        public List<int> Skills { get; set; }
+        public List<int> Types { get; set; }
 
     }
-
-
-
 }

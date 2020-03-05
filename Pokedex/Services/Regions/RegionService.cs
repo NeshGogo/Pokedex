@@ -24,9 +24,10 @@ namespace Pokedex.Services.Regions
              return  await _regionRepository.Delete(region);            
         }
 
-        public async Task<IEnumerable<Region>> GetAll()
+        public async Task<List<Region>> GetAll()
         {
-            return await _regionRepository.GetAll();
+            var regions = await _regionRepository.GetAll();
+            return regions.ToList();
         }
 
         public async Task<Region> GetById(int? id)

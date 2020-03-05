@@ -20,9 +20,10 @@ namespace Pokedex.Services.Types
             return _typeRepository.Delete(type);
         }
 
-        public Task<IEnumerable<Models.Type>> GetAll()
+        public async Task<List<Models.Type>> GetAll()
         {
-            return _typeRepository.GetAll();
+            var types = await _typeRepository.GetAll();
+            return types.ToList();
         }
 
         public Task<Models.Type> GetById(int? id)

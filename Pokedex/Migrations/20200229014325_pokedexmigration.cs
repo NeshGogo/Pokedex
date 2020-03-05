@@ -6,6 +6,26 @@ namespace Pokedex.Migrations
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropTable(
+                name: "PokemonSkills");
+
+            migrationBuilder.DropTable(
+                name: "PokemonTypes");
+
+            migrationBuilder.DropTable(
+                name: "Skills");
+
+            migrationBuilder.DropTable(
+                name: "Pokemons");
+
+            migrationBuilder.DropTable(
+                name: "Types");
+
+            migrationBuilder.DropTable(
+                name: "Regions");
+
+
+
             migrationBuilder.CreateTable(
                 name: "Regions",
                 columns: table => new

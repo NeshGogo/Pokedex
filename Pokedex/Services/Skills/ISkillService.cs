@@ -8,7 +8,7 @@ namespace Pokedex.Services.Skills
 {
     public interface ISkillService
     {
-        public Task<IEnumerable<Skill>> GetAll();
+        public Task<List<Skill>> GetAll();
         public Task<Skill> GetById(int? id);
         public Task<Skill> Insert(Skill skill);
         public Task<Skill> Update(Skill skill);

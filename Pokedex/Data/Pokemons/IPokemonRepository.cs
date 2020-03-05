@@ -8,5 +8,7 @@ namespace Pokedex.Data.Pokemons
 {
     public interface IPokemonRepository: IRepository<Pokemon>
     {
+        public Task<Pokemon> GetPokemonFull(int id);
+        public Task<IEnumerable<Pokemon>> GetAllWithRegion();
     }
 }

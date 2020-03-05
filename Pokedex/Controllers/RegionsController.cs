@@ -47,7 +47,7 @@ namespace Pokedex.Controllers
         // GET: Regions/Create
         public IActionResult Create()
         {
-            return View();
+            return View("Form");
         }
 
         // POST: Regions/Create
@@ -63,7 +63,7 @@ namespace Pokedex.Controllers
                 
                 return RedirectToAction(nameof(Index));
             }
-            return View(region);
+            return View("Form",region);
         }
 
         // GET: Regions/Edit/5
@@ -79,7 +79,7 @@ namespace Pokedex.Controllers
             {
                 return NotFound();
             }
-            return View(region);
+            return View("Form",region);
         }
 
         // POST: Regions/Edit/5
@@ -87,7 +87,7 @@ namespace Pokedex.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("RegionId,Name")] Region region)
+        public async Task<IActionResult> Edit(int id, [Bind("RegionId,Name,Colors")] Region region)
         {
             if (id != region.RegionId)
             {
@@ -113,7 +113,7 @@ namespace Pokedex.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            return View(region);
+            return View("Form",region);
         }
 
         // GET: Regions/Delete/5

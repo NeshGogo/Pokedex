@@ -9,7 +9,7 @@ namespace Pokedex.Services.Regions
 {
     public interface IRegionService
     {
-        public Task<IEnumerable<Region>> GetAll();
+        public Task<List<Region>> GetAll();
         public Task<Region> GetById(int? id);
         public Task<Region> Insert(Region region);
         public Task<Region> Update(Region region);

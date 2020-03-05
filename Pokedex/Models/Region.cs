@@ -15,14 +15,11 @@ namespace Pokedex.Models
         [Required(ErrorMessage = "Este campo es requerido")]
         [Display(Name = "Nombre")]
         public string Name { get; set; }
-        public Colors Colors { get; set; }
+        [Required(ErrorMessage = "Este campo es requerido")]
+        [Display(Name = "Color")]
+        public ColorsEnum Colors { get; set; }
     }
 
-    public enum Colors 
-    { 
-        red,
-        blue,
-        green,
-    }
+    
 
 }

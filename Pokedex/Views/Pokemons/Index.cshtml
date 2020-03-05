@@ -4,56 +4,78 @@
     ViewData["Title"] = "Index";
 }
 
-<h1>Index</h1>
+<h1 class="display-4 mb-lg-5 text-center">Listado de Pokemones</h1>
 
-<p>
-    <a asp-action="Create">Create New</a>
+<p class="text-right m-4">
+    <a class="btn btn btn-success" asp-action="Create">Añadir nuevo</a>
 </p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Name)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Height)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Weight)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Sex)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Region)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Name)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Height)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Weight)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Sex)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Region.Name)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.PokemonId">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.PokemonId">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.PokemonId">Delete</a>
-            </td>
-        </tr>
+
+<div class="d-flex justify-content-around mt-3 flex-wrap">
+    @foreach (var item in Model)
+    {
+        <div class="card shadow bg-@item.Region.Colors" style="width: 20rem;">
+            <a asp-action="details" asp-route-id="@item.PokemonId"><img src="~/css/PokemonImg/@item.PhotoPath" class="card-img-top" alt="@item.Name"></a>
+            <div class="card-body text-@((item.Region.Colors==ColorsEnum.light|| item.Region.Colors==ColorsEnum.white||
+                item.Region.Colors==ColorsEnum.warning)? ColorsEnum.dark : ColorsEnum.light)">
+
+                <h5 class="card-title w-100  text-center">@item.Name</h5>
+
+                <div class="container row m-0">
+                    <div class="col-5">
+                        <div>
+                            <p class="card-text">
+                                Altura: @Html.DisplayFor(modelItem => item.Height)M
+                            </p>
+                        </div>
+
+                        <div>
+                            <p>
+                                Peso: @Html.DisplayFor(modelItem => item.Weight)Kg
+                            </p>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div>
+                            <p class="card-text">
+                                Sexo:
+                                @if (item.Sex == SexTypeEnum.Femenino)
+                                {
+                                    <img src="~/css/img/hembra.svg" alt="@item.Sex" width="15" />
+                                }
+                                else
+                                {
+                                    <img src="~/css/img/hombre.svg" alt="@item.Sex" width="15" />
+                                }
+                            </p>
+                        </div>
+                        <div>
+                            <p class="card-text">
+                                Region:  @Html.DisplayFor(modelItem => item.Region.Name)
+                            </p>
+                        </div>
+                    </div>
+
+
+                </div>
+                <div class="d-flex justify-content-center">
+                    <div class="btn-group">
+                        <a class="btn btn-sm btn-primary @(item.Region.Colors == ColorsEnum.primary?"active":"")" asp-action="Edit" asp-route-id="@item.PokemonId">Editar</a> |
+                        <a class="btn btn-sm btn-info @(item.Region.Colors == ColorsEnum.info?"active":"")" asp-action="Details" asp-route-id="@item.PokemonId">Detalle</a> |
+                        <a class="btn btn-sm btn-danger @(item.Region.Colors == ColorsEnum.danger?"active":"")" asp-action="Delete" asp-route-id="@item.PokemonId">Eliminar</a>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    }
+</div>
+@if (Model.Count()<0)
+{
+    <div class="alert alert-warning alert-dismissible fade show" role="alert">
+        <strong>Advertencia!</strong> La lista de pokemones esta vacia.
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
 }
-    </tbody>
-</table>

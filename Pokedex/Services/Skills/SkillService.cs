@@ -21,9 +21,10 @@ namespace Pokedex.Services.Skills
             return await _skillRepository.Delete(skill);
         }
 
-        public async Task<IEnumerable<Skill>> GetAll()
+        public async Task<List<Skill>> GetAll()
         {
-            return await _skillRepository.GetAll();
+            var skills = await _skillRepository.GetAll();
+            return skills.ToList();
         }
 
         public async Task<Skill> GetById(int? id)

@@ -4,45 +4,116 @@
     ViewData["Title"] = "Details";
 }
 
-<h1>Details</h1>
+<h1>Detalles de @Model.Name</h1>
 
 <div>
-    <h4>Pokemon</h4>
-    <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Name)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Name)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Height)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Height)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Weight)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Weight)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Sex)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Sex)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Region)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Region.Name)
-        </dd>
-    </dl>
+    <div class="card bg-@Model.Region.Colors">
+        <div class="card-header card-title">
+            <h3>@Model.Name</h3>
+        </div>
+
+        <figure class="text-black-50 text-center mt-3">
+            <div>
+                <img src="~/css/PokemonImg/@Model.PhotoPath" width="150" height="150" class="rounded-circle" alt="@Model.Name" />
+            </div>
+            <figcaption>@Model.Name</figcaption>
+        </figure>
+        <hr />
+        <div class="card-body m-0 text-@((Model.Region.Colors==ColorsEnum.light|| Model.Region.Colors==ColorsEnum.white||
+                Model.Region.Colors==ColorsEnum.warning)? ColorsEnum.dark : ColorsEnum.light)">
+            <div class="row text-center ml-0 mr-0">
+                <div class="col">
+                    <dt class="col-10">
+                        @Html.DisplayNameFor(model => model.Name)
+                    </dt>
+                    <dd class="col-10">
+                        @Html.DisplayFor(model => model.Name)
+                    </dd>
+                </div>
+                <div class="col">
+                    <dt class="col-10">
+                        @Html.DisplayNameFor(model => model.Height)
+                    </dt>
+                    <dd class="col-10">
+                        @Html.DisplayFor(model => model.Height)M
+                    </dd>
+                </div>
+                <div class="col">
+                    <dt class="col-10">
+                        @Html.DisplayNameFor(model => model.Weight)
+                    </dt>
+                    <dd class="col-10">
+                        @Html.DisplayFor(model => model.Weight)Kg
+                    </dd>
+                </div>
+                <div class="col">
+                    <dt class="col-10">
+                        @Html.DisplayNameFor(model => model.Sex)
+                    </dt>
+                    <dd class="col-10">
+                        @Html.DisplayFor(model => model.Sex)
+                    </dd>
+                </div>
+                <div class="col">
+                    <dt class="col-10">
+                        @Html.DisplayNameFor(model => model.Region)
+                    </dt>
+                    <dd class="col-10">
+                        @Html.DisplayFor(model => model.Region.Name)
+                    </dd>
+                </div>
+
+                <div class="col">
+                    <dt class="col-10">
+                        Tipo
+                    </dt>
+                    <ul class="list-unstyled col-10">
+                        @foreach (var type in Model.PokemonTypes)
+                        {
+                            <li class="page-item">@type.Type.Name</li>
+                        }
+
+                    </ul>
+
+                </div>
+
+
+            </div>
+            <hr />
+
+            <h5 class="card-title  text-center">Habilidades</h5>
+
+            <table class="table  table-bordered table-striped text-center text-@((Model.Region.Colors==ColorsEnum.light|| Model.Region.Colors==ColorsEnum.white||
+                Model.Region.Colors==ColorsEnum.warning)? ColorsEnum.dark : ColorsEnum.light)">
+                <thead class="thead-@(Model.Region.Colors == ColorsEnum.dark? ColorsEnum.light: ColorsEnum.dark)">
+                    <tr>
+                        <th>Nombre</th>
+                        <th>Descripcion</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    @foreach (var skill in Model.PokemonSkills)
+                    {
+                        <tr>
+                            <td>
+                                @skill.Skill.Name
+                            </td>
+                            <td>
+                                @skill.Skill.Description
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+        <div class="card-footer card-img-bottom d-flex justify-content-center">
+            <div>
+                <a class="btn btn-primary" asp-action="Edit" asp-route-id="@Model.PokemonId">Editar</a> |
+                <a class="btn btn-secondary" asp-action="Index">Volver</a>
+            </div>
+            
+        </div>
+    </div>
 </div>
-<div>
-    <a asp-action="Edit" asp-route-id="@Model.PokemonId">Edit</a> |
-    <a asp-action="Index">Back to List</a>
-</div>
+
